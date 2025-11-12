@@ -1,0 +1,27 @@
+<style>
+    @keyframes pulse-plus {
+        0%, 100% {
+            opacity: 0.5%;
+            transform: scale(0.8);
+        }
+        50% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .animate-pulse-plus {
+        animation: pulse-plus 1.4s ease-in-out infinite;
+    }
+</style>
+
+<div class="h-screen flex flex-col justify-center items-center overflow-hidden">
+    <div class="grid grid-cols-8">
+        @for (cell of cells(); track cell.i * 100 + cell.j) {
+            <span 
+                class="flex flex-row select-none text-red-500 text-sm px-1.5 animate-pulse-plus"
+                [style.animationDelay.ms]="cell.delayMs"
+                >+</span>
+        }
+    </div>
+</div>
