@@ -1,7 +1,7 @@
-import express from 'express';
-import cors from 'cors';
-import neo4j from 'neo4j-driver';
-import * as fs from 'fs';
+import express from "express";
+import cors from "cors";
+import neo4j from "neo4j-driver";
+import * as fs from "fs";
 
 // const ensureEnv = (name: string, value: string | undefined): string => {
 //     if (!value) throw new Error(`${name} must be set`);
@@ -12,21 +12,21 @@ import * as fs from 'fs';
 // const NEO4J_USER = ensureEnv('NEO4J_USER', process.env.NEO4J_USER);
 // const NEO4J_PASS = ensureEnv('NEO4J_PASS', process.env.NEO4J_PASS);
 
-const NEO4J_URI  = 'neo4j://127.0.0.1:7687';
-const NEO4J_USER = 'neo4j';
-const NEO4J_PASS = 'recnetpass';
+const NEO4J_URI = "neo4j://127.0.0.1:7687";
+const NEO4J_USER = "neo4j";
+const NEO4J_PASS = "recnetpass";
 
 const app = express();
 const driver = neo4j.driver(
     NEO4J_URI,
-    neo4j.auth.basic(NEO4J_USER, NEO4J_PASS)
+    neo4j.auth.basic(NEO4J_USER, NEO4J_PASS),
 );
 
-app.use(cors())
-app.use(express.json()) 
+app.use(cors());
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('RecNet API is running 🚀');
+app.get("/", (req, res) => {
+    res.send("RecNet API is running 🚀");
 });
 
 // Person 1 creates the session
@@ -36,8 +36,8 @@ app.get('/', (req, res) => {
 app.post(`/api/sessions`, async (req, res) => {
     const neo4jSession = driver.session();
     const host = req.body.host;
-    if(!host) {
-        return res.status(400).json({error: 'Host info missing!'});
+    if (!host) {
+        return res.status(400).json({ error: "Host info missing!" });
     }
 
     try {
@@ -65,29 +65,29 @@ app.post(`/api/sessions`, async (req, res) => {
             MERGE (pH)-[:IN_SESSION {role:"H"}]->(s)
 
             RETURN s.sessionId AS sessionId
-        `
+        `;
         const result = await neo4jSession.run(cypher, { host });
-        const record = result.records[0]
-        const sessionID = record.get('sessionId')
+        const record = result.records[0];
+        const sessionID = record.get("sessionId");
 
-        res.status(201).json({message: `Session created: ${sessionID}`});
-        console.log(`Created session: ${sessionID}`)
+        res.status(201).json({ message: `Session created: ${sessionID}` });
+        console.log(`Created session: ${sessionID}`);
     } catch (err) {
-        console.error('Failed to run session query', err);
-        res.status(500).json({error: 'Failed to create session'});
+        console.error("Failed to run session query", err);
+        res.status(500).json({ error: "Failed to create session" });
     } finally {
         await neo4jSession.close();
     }
-})
+});
 
 // Join session
-app.post('/api/session/:id/join', async (req, res) => {
+app.post("/api/session/:id/join", async (req, res) => {
     const neo4jSession = driver.session();
     const participant = req.body.participant;
     const sessionId = req.params.id;
 
     if (!participant) {
-        return res.status(400).json({ error: 'Participant info missing!' });
+        return res.status(400).json({ error: "Participant info missing!" });
     }
 
     try {
@@ -120,138 +120,191 @@ app.post('/api/session/:id/join', async (req, res) => {
         `;
 
         const result = await neo4jSession.run(cypher, {
-        sessionId,
-        participant,
+            sessionId,
+            participant,
         });
 
         if (!result.records.length) {
-        return res.status(404).json({ error: 'Session not found' });
+            return res.status(404).json({ error: "Session not found" });
         }
 
         const record = result.records[0];
-        const returnedId = record.get('sessionId');
+        const returnedId = record.get("sessionId");
 
         res.status(200).json({
-        message: `Participant successfully joined session: ${returnedId}`,
-        sessionId: returnedId,
+            message: `Participant successfully joined session: ${returnedId}`,
+            sessionId: returnedId,
         });
 
         console.log(`Session joined: ${returnedId}`);
     } catch (err) {
-        console.error('Failed to run session query.', err);
-        res.status(500).json({ error: 'Failed to join session.' });
+        console.error("Failed to run session query.", err);
+        res.status(500).json({ error: "Failed to join session." });
     } finally {
         await neo4jSession.close();
     }
 });
 
 app.get(`/api/update-genres`, async (req, res) => {
-    const base_url = 'https://api.themoviedb.org/3/genre';
+    const base_url = "https://api.themoviedb.org/3/genre";
     const options = {
-        method: 'GET',
+        method: "GET",
         headers: {
-            accept: 'application/json',
-            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwY2UzNTc1Mjg0MzcyMzY5N2M3MDBlMThhODY4YjA1MyIsIm5iZiI6MTc0MTIzODc5Ny43MDMsInN1YiI6IjY3YzkzMjBkYmE5NzNkOWY3ZjBjYzg5YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TA3zQ52pqPhIdPf5Taj3hZGdgnD-XUBMiZY4_jRNtCE'
-        }
+            accept: "application/json",
+            Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwY2UzNTc1Mjg0MzcyMzY5N2M3MDBlMThhODY4YjA1MyIsIm5iZiI6MTc0MTIzODc5Ny43MDMsInN1YiI6IjY3YzkzMjBkYmE5NzNkOWY3ZjBjYzg5YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TA3zQ52pqPhIdPf5Taj3hZGdgnD-XUBMiZY4_jRNtCE",
+        },
     };
-    const mediaTypes = ['movie', 'tv'];
+    const mediaTypes = ["movie", "tv"];
     const urls = mediaTypes.map((type) => `${base_url}/${type}/list`);
 
     try {
         // first retrieve genre list from TMDB
         const results = await Promise.all(
-            urls.map(async(url) => {
+            urls.map(async (url) => {
                 const r = await fetch(url, options);
                 const json = await r.json();
 
-                if(!r.ok || json?.success == false) {
-                    console.error('TMDB error response:', { url, status: r.status, json })
+                if (!r.ok || json?.success == false) {
+                    console.error("TMDB error response:", {
+                        url,
+                        status: r.status,
+                        json,
+                    });
                     throw new Error(json?.status_message ?? `TMDB failed: ${r.status}`);
                 }
-                return json
-            })
-        )
+                return json;
+            }),
+        );
 
         // format the JSON to get rid of parent "genres"
-        const combined = results.flatMap((r: any) => Array.isArray(r?.genres) ? r.genres : [])
+        const combined = results.flatMap((r: any) =>
+            Array.isArray(r?.genres) ? r.genres : [],
+        );
 
         // now use a hashmap to find in O(1) time
         const map = combined.reduce((acc, currentItem) => {
             acc.set(currentItem.id, currentItem.name);
             return acc;
-        }, new Map<string, string>())
-        console.log(map)
+        }, new Map<string, string>());
+        console.log(map);
 
         const map_object = Object.fromEntries(map); // transform key value pairs into object
 
         // write to JSON file for persistence
-        const outputFilePath: string = 'genres.json';
-        const genreJSONString: string = JSON.stringify(map_object, null)
-        fs.writeFile(outputFilePath, genreJSONString, 'utf-8', (err) => {
+        const outputFilePath: string = "genres.json";
+        const genreJSONString: string = JSON.stringify(map_object, null);
+        fs.writeFile(outputFilePath, genreJSONString, "utf-8", (err) => {
             if (err) {
-                console.error('Error writing genres to file', err)
+                console.error("Error writing genres to file", err);
             }
-        })
-        console.log(`Genre data written to ${outputFilePath} as JSON.`)
-        return res.status(200).json({results: combined})
+        });
+        console.log(`Genre data written to ${outputFilePath} as JSON.`);
+        return res.status(200).json({ results: combined });
     } catch (err) {
-        console.error('Failed to update genres', err)
-        res.status(500).json({error: "Failed to update movie genres."})
+        console.error("Failed to update genres", err);
+        res.status(500).json({ error: "Failed to update movie genres." });
     }
-})
+});
 
-/** 
+/**
  * sends request to TMDB API for movie retrieval then format and send to Neo4j
  * @argument {Number} length
  * @returns {MediaType} movie | tv
  */
 app.post(`/api/session/:id/discover`, async (req, res) => {
-    const base_url = 'https://api.themoviedb.org/3/discover';
-    const key = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwY2UzNTc1Mjg0MzcyMzY5N2M3MDBlMThhODY4YjA1MyIsIm5iZiI6MTc0MTIzODc5Ny43MDMsInN1YiI6IjY3YzkzMjBkYmE5NzNkOWY3ZjBjYzg5YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TA3zQ52pqPhIdPf5Taj3hZGdgnD-XUBMiZY4_jRNtCE";
+    const neo4jSession = driver.session();
+    const sessionId = req.params.id;
+    const base_url = "https://api.themoviedb.org/3/discover";
+    const key =
+        "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwY2UzNTc1Mjg0MzcyMzY5N2M3MDBlMThhODY4YjA1MyIsIm5iZiI6MTc0MTIzODc5Ny43MDMsInN1YiI6IjY3YzkzMjBkYmE5NzNkOWY3ZjBjYzg5YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.TA3zQ52pqPhIdPf5Taj3hZGdgnD-XUBMiZY4_jRNtCE";
     const options = {
-        method: 'GET',
+        method: "GET",
         headers: {
-            accept: 'application/json',
-            Authorization: `Bearer ${key}`
-        }
+            accept: "application/json",
+            Authorization: `Bearer ${key}`,
+        },
     };
 
-    type MediaType = 'movie' | 'tv';
+    type MediaType = "movie" | "tv";
     interface DiscoverRequest {
-        length?: number,
+        length?: number;
         mediaTypes?: MediaType[];
     }
 
-    const { length=20, mediaTypes=['movie'] } = req.body as DiscoverRequest;
-    const urls = mediaTypes.map((type) => `${base_url}/${type}`)
+    const { length = 20, mediaTypes = ["movie"] } = req.body as DiscoverRequest;
+    const urls = mediaTypes.map((type) => `${base_url}/${type}`);
 
     try {
+        // take user settings of how in depth they want their movie discovery (swiping sequence) to be
+        // params: number of swipes, favorite genres, directors
         const results = await Promise.all(
             urls.map(async (url) => {
                 const r = await fetch(url, options);
                 const json = await r.json();
 
                 if (!r.ok || json?.success === false) {
-                    console.error('TMDB error response:', { url, status: r.status, json });
+                    console.error("TMDB error response:", {
+                        url,
+                        status: r.status,
+                        json,
+                    });
                     throw new Error(json?.status_message ?? `TMDB failed: ${r.status}`);
                 }
-                
+
                 return json;
-            })
+            }),
         );
 
-        const combined = results.flatMap((r: any) => (Array.isArray(r?.results) ? r.results : []));
+        const combined = results.flatMap((r: any) =>
+            Array.isArray(r?.results) ? r.results : [],
+        );
         const limited = combined.slice(0, length);
 
-        return res.status(200).json({ results: limited });
+        // get genres mapping
+        const genre_path = "genres.json";
+        const genre_mapping = JSON.parse((await fs.promises.readFile(genre_path)).toString()); // Buffer to string to mapping
 
-  } catch (err) {
-        console.error('Failed to discover from TMDB.', err)
-        res.status(500).json({error: "Failed to retrieve movies."})
+        // map genres to title
+        const final = limited.map((r) => {
+            return {
+                titleId: r.id,
+                title: r.title,
+                genres: r.genre_ids.map((currentGenreId: string) => {
+                    return genre_mapping[currentGenreId];
+                }),
+                overview: r.overview,
+                mediaType: mediaTypes[0]
+            };
+        });
+
+        // write cypher for neo4j
+        const cypher = `
+            MATCH (s:Session {sessionId: $sessionId})
+
+            UNWIND $titles AS t
+            MERGE (title:Title {titleId: t.titleId})
+            SET title.name      = t.title,
+                title.overview  = t.overview,
+                title.mediaType = t.mediaType
+
+            FOREACH (g IN t.genres |
+                MERGE (gNode:Genre {name: g})
+                MERGE (title)-[:HAS_GENRE]->(gNode)
+            )
+
+            MERGE (s)-[:HAS_TITLE]->(title)
+        `;
+        const result = await neo4jSession.run(cypher, { sessionId, titles: final });
+        console.log(result.records)
+        return res.status(200).json({ results: final });
+    } catch (err) {
+        console.error("Failed to discover from TMDB.", err);
+        res.status(500).json({ error: "Failed to retrieve movies." });
     } finally {
-        
+        await neo4jSession.close()
     }
-})
+});
 
 /**
  * Swipe on a movie title (left = dislike, right = like)
@@ -262,13 +315,19 @@ app.post(`/api/session/:id/swipe`, async (req, res) => {
     const neo4jSession = driver.session();
     const sessionId = req.params.id;
     const { personId, titleId, direction } = req.body as {
-        personId ?: string;
+        personId?: string;
         titleId?: string;
-        direction?: 'left'|'right';
+        direction?: "left" | "right";
     };
 
-    if (!personId || !titleId || (direction !== 'left' && direction !== 'right') ) {
-        return res.status(400).json({error:`personId, titleId, direction are required.`});
+    if (
+        !personId ||
+        !titleId ||
+        (direction !== "left" && direction !== "right")
+    ) {
+        return res
+            .status(400)
+            .json({ error: `personId, titleId, direction are required.` });
     }
 
     try {
@@ -293,37 +352,43 @@ app.post(`/api/session/:id/swipe`, async (req, res) => {
                 (r.direction = "right" AND r2 IS NOT NULL) AS isMatch
         `;
 
-        const result = await neo4jSession.run(cypher, {sessionId, personId, titleId, direction });
+        const result = await neo4jSession.run(cypher, {
+            sessionId,
+            personId,
+            titleId,
+            direction,
+        });
 
         if (!result.records.length) {
-            return res.status(404).json({error: `Session/person/title not found (or person not in session)`})
+            return res.status(404).json({
+                error: `Session/person/title not found (or person not in session)`,
+            });
         }
-        const record = result.records[0]
-        const isMatch = record.get('isMatch');
-        
+        const record = result.records[0];
+        const isMatch = record.get("isMatch");
+
         res.status(200).json({
             message: `Swipe recorded.`,
             sessionId,
             personId,
             titleId,
-            direction: record.get('direction'),
-            isMatch
-        })
-        console.log(`Swiped: session=${sessionId} title=${titleId}, direction=${direction}`)
-
-    } catch(err) {
-        console.error('Failed to run swipe query.', err)
-        res.status(500).json({error: "Failed to swipe on movie."})
+            direction: record.get("direction"),
+            isMatch,
+        });
+        console.log(
+            `Swiped: session=${sessionId} title=${titleId}, direction=${direction}`,
+        );
+    } catch (err) {
+        console.error("Failed to run swipe query.", err);
+        res.status(500).json({ error: "Failed to swipe on movie." });
     } finally {
         await neo4jSession.close();
     }
 });
 
 // Make recommendations based on movies, genres, directors liked and disliked
-app.post(`/api/session/:id/matches`, async (req, res) =>{
-
-})
+app.post(`/api/session/:id/matches`, async (req, res) => { });
 
 app.listen(3001, () => {
-  console.log('API running on http://localhost:3001');
+    console.log("API running on http://localhost:3001");
 });
