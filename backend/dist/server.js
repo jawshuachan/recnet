@@ -60,9 +60,9 @@ app.post(`/api/sessions`, async (req, res) => {
         `;
         const result = await neo4jSession.run(cypher, host);
         const record = result.records[0];
-        const sessionID = record.get('sessionId');
-        res.status(201).json({ message: `Session created: ${sessionID}` });
-        console.log(`Created session: ${sessionID}`);
+        const sessionId = record.get('sessionId');
+        res.status(201).json({ message: `Session created: ${sessionId}` });
+        console.log(`Created session: ${sessionId}`);
     }
     catch (err) {
         console.error('Failed to run session query', err);
@@ -114,9 +114,6 @@ app.post(`/api/session/:id/join`, async (req, res) => {
     finally {
         await neo4jSession.close();
     }
-});
-// Swipe to understand genres liked
-app.post(`api/session/:id/swipe`, async (req, res) => {
 });
 // Make recommendations based on movies, genres, directors liked and disliked
 app.post(`api/session/:id/matches`, async (req, res) => {
