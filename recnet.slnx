@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="recnet.Shared/recnet.Shared.csproj" />
+  <Project Path="recnet.Web/recnet.Web.csproj" />
+</Solution>

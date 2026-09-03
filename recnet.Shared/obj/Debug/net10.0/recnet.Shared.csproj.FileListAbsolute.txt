@@ -1,0 +1,12 @@
+/Users/jaws/Dev/recnet/recnet.Shared/bin/Debug/net10.0/recnet.Shared.deps.json
+/Users/jaws/Dev/recnet/recnet.Shared/bin/Debug/net10.0/recnet.Shared.dll
+/Users/jaws/Dev/recnet/recnet.Shared/bin/Debug/net10.0/recnet.Shared.pdb
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/recnet.Shared.GeneratedMSBuildEditorConfig.editorconfig
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/recnet.Shared.AssemblyInfoInputs.cache
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/recnet.Shared.AssemblyInfo.cs
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/recnet.Shared.csproj.CoreCompileInputs.cache
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/recnet.Shared.sourcelink.json
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/recnet.Shared.dll
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/refint/recnet.Shared.dll
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/recnet.Shared.pdb
+/Users/jaws/Dev/recnet/recnet.Shared/obj/Debug/net10.0/ref/recnet.Shared.dll
