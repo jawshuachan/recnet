@@ -16,12 +16,18 @@ Few things to note:
 - users just need to create and join a party
 - at least 2 users are required to start the party
 
+## General Flow
+1. Party leader will create a session with associated PartyId, party config will remain in a mutable state until all users have joined. setup sesssion preferences (e.g. how many movies to swipe on, media genres, media type)
+2. send a GET request to external API for Netflix movies/series.
+
 ## Pipeline
 - Ingestion -> normalization -> projection into Neo4j query
 
 ## To Do
+1. First need a system to pull in media (e.g. how many movies, what kinds of movies, )
+
 1. First lets create the party system. ie. how do users create and join? includes User, Party models, and what to save in the database if necessary (all the boilerplate code)
 2. The recommendation engine (Neo4j)
 
-To Note
-
+# models
+the data models are probably the most important part. For each data layer, think about how it is represented in terms of the next-lower layer.

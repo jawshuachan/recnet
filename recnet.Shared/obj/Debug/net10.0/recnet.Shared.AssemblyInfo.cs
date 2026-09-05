@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("recnet.Shared")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+868210300c3126d963f418e91ebfc50ecbe22e8f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+476c2f0cf982e8d467d78adfd3501ab2685cf61f")]
 [assembly: System.Reflection.AssemblyProductAttribute("recnet.Shared")]
 [assembly: System.Reflection.AssemblyTitleAttribute("recnet.Shared")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
